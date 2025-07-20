@@ -1,0 +1,26 @@
+name: Daily Countdown
+
+on:
+  schedule:
+    # 06:00 UTC == 09:00 Asia/Jerusalem (DST) during the entire 90-day window
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps (none yet)
+        run: npm ci || npm install
+      - name: Post countdown
+        run: npm run post
+        env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            TZ: "Asia/Jerusalem"

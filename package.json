@@ -1,0 +1,11 @@
+{
+  "name": "slack-countdown",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "post": "node send-countdown.js",
+    "lint": "echo \"(add eslint if you care)\""
+  },
+  "dependencies": {}
+}
