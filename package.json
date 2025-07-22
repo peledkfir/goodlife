@@ -7,5 +7,7 @@
     "post": "node send-countdown.js",
     "lint": "echo \"(add eslint if you care)\""
   },
-  "dependencies": {}
+  "dependencies": {
+    "@slack/web-api": "^7.9.3"
+  }
 }

@@ -19,6 +19,7 @@
  * Run idempotently once per day ~09:00 local.
  */
 
+import { WebClient } from "@slack/web-api";
 import { createHash } from "crypto";
 import fs from "fs";
 
@@ -28,6 +29,7 @@ const START_DATE = "2025-07-20"; // inclusive
 const TARGET_DATE = "2025-10-18"; // inclusive target day (day 0 message)
 const TZ = process.env.TZ || "Asia/Jerusalem";
 const WEBHOOK = process.env.SLACK_WEBHOOK_URL;
+const client = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 // Milestones (days left) that trigger an amplified / alternate message
 const MILESTONES = new Set([90, 75, 60, 45, 30, 21, 14, 10, 7, 5, 3, 2, 1, 0]);
@@ -35,7 +37,7 @@ const MILESTONES = new Set([90, 75, 60, 45, 30, 21, 14, 10, 7, 5, 3, 2, 1, 0]);
 // Bar settings
 const BAR_LENGTH = 30;
 const BAR_FILLED = "🟩";
-const BAR_EMPTY  = "⬜";
+const BAR_EMPTY = "⬜";
 
 // After project ends (daysLeft < 0) => stop posting (no “days since” chatter)
 const STOP_AFTER = true;
@@ -131,15 +133,13 @@ function alreadyPostedGuard(hash) {
 }
 
 async function postToSlack(text) {
-  const res = await fetch(WEBHOOK, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, mrkdwn: true })
+  await client.chat.postMessage({
+    channel: "#proj-double",
+    text,
+    mrkdwn: true,
+    username: "Money Doubler",
+    icon_emoji: ":proj_double:"
   });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Slack post failed ${res.status}: ${body}`);
-  }
 }
 
 function main() {
